@@ -13,7 +13,7 @@ if [[ $1 == '--help' ]]; then
 fi
 
 
-current=$(git branch | grep '*' | tr -d '*' | tr -d ' ')
+current=`git rev-parse --abbrev-ref HEAD`
 
 if [[ $current -eq "" ]]; then 
 	echo "invalid git repository"
