@@ -2,9 +2,11 @@
 if [[ -f "pom.xml" ]]; then
 	mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec
 else
-    echo "Go inside a maven project first "
-    echo "JUDEN ARE ILLOGICAL"
-    echo "      "
+    echo "   --------------------------------- "
+    echo "  [ Go inside a maven project first ]"
+    echo "   --------------------------------- "
+    echo "                \\"
+    echo "                 \\"
     echo "                    :                                 :       "
     echo "                  :                                   :       "
     echo "                  :  RRVIttIti+==iiii++iii++=;:,       :      "
