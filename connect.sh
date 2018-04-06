@@ -68,9 +68,3 @@ fi
 ssh $USER"@"$DEST_HOST -p $SSH_PORT 
 set +x
 exit 0;
-
-
-
-
-
-
