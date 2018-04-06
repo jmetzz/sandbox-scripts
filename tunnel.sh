@@ -1,7 +1,7 @@
 #!/bin/bash
 
 error () {
-     echo "Wrong pagameter: $1"
+     echo "Wrong parameter: $1"
      usage
      exit $2
 } >&2
@@ -9,8 +9,9 @@ error () {
 usage() {
     echo "Usage:"
     echo "   tunnel connect [-n number] [-h host] [-u user] [-p password] [-a app] [-v]"
+    echo "   tunnel list"
     echo "   tunnel spy <port>"
-    echo "   tunnel halt <host> <control socket path>"
+    echo "   tunnel halt <control socket path>"
     echo
     echo "Establish connection options are:"
     echo "    -u | --user user name (default: webuser)"
@@ -26,17 +27,29 @@ usage() {
     echo "      tunnel connect -h 10.3.11.15 -p 2223"
     echo "      tunnel connect -n 2"
     echo
+    echo "List open tunnels:"
+    echo "    tunnel list"
+    echo
     echo "Check connection:"
     echo "    tunnel spy 60000"
     echo
     echo "Close connection options are:"
-    echo "    -s | --socket  control socket for connection sharing (default: '%h%p%r')"
-    echo "    -h | --host ip address to the target host (default: \$DEFAULT_DOCKER_HOST)"
-    echo 
+    echo "    -s | --socket  control socket for connection sharing (default: 'host-sshport-user')"
+    echo
     echo "    Example:"
-    echo "      tunnel halt 10.3.11.15 <control socket path>"
+    echo "      tunnel halt /tmp/10.3.11.62-2223-webuser"
 
 }
+
+USER="webuser"
+DEST_HOST=$DEFAULT_DOCKER_HOST
+SSH_PORT=2222
+BIND_LOCAL_PORT="9000"
+BIND_TARGET_PORT="9000"
+BIND_TARGET_HOST="localhost"
+VERBOSE=0
+OFF_SET=0
+SOCKET="/tmp/$DEST_HOST-$SSH_PORT-$USER"
 
 
 function checkConnection(){
@@ -50,33 +63,25 @@ function checkConnection(){
     nc -z localhost $port || echo 'no tunnel open' ; exit 0;
     echo "tunnel active on port $1"; exit 0;    
 
-    #lsof -PiTCP -sTCP:LISTEN
-    #netstat -ap tcp | grep -i "listen"
     #https://apple.stackexchange.com/questions/117644/how-can-i-list-my-open-network-ports-with-netstat
 }
 
+function listTunnels(){
+    lsof -PiTCP -sTCP:LISTEN | grep ssh
+}
+
 function closeConnection(){
-    echo "FAIL : not implmeneted yet" && exit 1
-    
-    server="$1"
-    socket="$2"
     set -x
-    ssh -S $socket -O exit $server
+    if [[ ! -z "$1" ]]; then
+        SOCKET="$1"
+    fi
+
+    ssh -S $SOCKET -O exit "localhost"
     set +x
     exit 0;
 }
 
 function establishConnection(){
-
-    USER="webuser"
-    DEST_HOST=$DEFAULT_DOCKER_HOST
-    SSH_PORT=2222
-    BIND_LOCAL_PORT="9000"
-    BIND_TARGET_PORT="9000"
-    BIND_TARGET_HOST="localhost"
-    VERBOSE=0
-    OFF_SET=0
-    SOCKET="/tmp/%h%p%r"
 
     while [[ $# -gt 0 ]]
     do
@@ -195,6 +200,9 @@ main() {
             ;;
         halt)
             closeConnection "${@:2}"
+            ;;
+        list)
+            listTunnels
             ;;
         help)
             echo "Creates a ssh tunnel to a specified host"
