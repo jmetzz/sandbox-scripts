@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# simple script to create a bash-script file only with headers
+
+if [[ ! $1 ]]; then
+	echo "Missing argument."
+	echo "No file name was given."
+	exit 1
+fi
+
+filename="$1"
+if [[ -e $filename ]];
+	echo "File ${filename} already exists"
+	exit 1;
+fi
+
+echo "#!/bin/bash" > ./$1
+
+if [[ ! -e $filename ]]; then
+	echo "Error creating script file. Check directory permissions."
+	exit 1;
+fi
+
+chmod u+x "$filename"
+
+if [[ $EDITOR ]]; then
+	$EDITOR "$filename"
+else
+	echo "New script created in ./${filename}"
+fi
+
+exit 0
