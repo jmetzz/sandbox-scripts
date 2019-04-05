@@ -46,15 +46,12 @@ _print_url() {
 _success() {
     REASON="$1"
     _print_success "$REASON"
-    (( SMOKE_TESTS_RUN++ ))
 }
 
 
 _fail() {
     REASON="$1"
-    (( SMOKE_TESTS_FAILED++ ))
-    (( SMOKE_TESTS_RUN++ ))
-    _smoke_print_failure "$REASON"
+    _print_failure "$REASON"
 }
 
 
