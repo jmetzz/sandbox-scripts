@@ -11,7 +11,7 @@ PROJECT="ya1"
 WORKSPACE=""
 
 function usage {
-    echo "$0 -[h] <project: default ya1> <workspace>"
+    echo "$0 -[h] <project> <workspace>"
     echo "       -h           : shows this message. Ignores any other arguments."
     echo
 }
@@ -81,7 +81,7 @@ function status_single_repo(){
 }
 
 function main(){
-    # $WORKSPACE $PROJECT $BRANCH $CHECKOUT $UPDATE
+    # $WORKSPACE $PROJECT
     base_dir="$1"
     project="$2"
     current_dir=$(pwd)
@@ -95,10 +95,9 @@ function main(){
 
     repos=$(ls -d */ | tr "\n" " " )
     IFS='/ ' read -r -a array <<< "$repos"
-
     for repo in "${array[@]}"
     do
-        if [[ $repo =~ ^"$project".* ]] ; then
+        if [[ $repo =~ ^"$project".* ]]; then
             printf "* %-40s|" ${repo}
             repo_path=$base_dir/$repo
             status_single_repo $repo_path
@@ -140,10 +139,10 @@ shift $((OPTIND-1))
 
 remaining_arguments=( "$@" )
 if [[ ${#remaining_arguments[*]} -ne 2 ]]; then
-    err "Missing arguments" 3
+    err "Missing required arguments" 3
 fi
 
-PROJECT="${remaining_arguments[1]}"
-WORKSPACE="${remaining_arguments[2]}"
+PROJECT="${remaining_arguments[0]}"
+WORKSPACE="${remaining_arguments[1]}"
 
 main $WORKSPACE $PROJECT
