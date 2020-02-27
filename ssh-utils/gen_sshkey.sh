@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
-DOMAIN="dummy.com"
+DOMAIN="github.com"
+USER=$(whoami)
 
-function usage {
-    echo "$0 -[hd]"
-    echo "       -h  : shows this message. Ignores any other arguments."
-    echo "       -d  : sets the domain name for you key. (Example: dummy.com)"
+function usage() {
+    echo "$0 -[hud]"
+    echo "    -u: sets USER local variable. (Defaults to logged in user name.)"
+    echo "    -d: sets the domain name for you key. (Default: github.com)"
+    echo "    -h: shows this message. Ignores any other arguments."
     echo
 }
 
-function err (){
+function err() {
     local msg=$1
     echo "[ERROR] - ${msg}"
     usage
@@ -24,45 +26,40 @@ banner() {
     echo "$edge"
 }
 
-
-if [ $# -lt 1 ]; then
-    echo 'Missing domain argument'
-    echo
-    usage
-    exit 1
-fi
-
-
-while getopts ":hd:" opt; do
-    case "${opt}" in
-        d)
-            DOMAIN="${OPTARG}"
+function parse_arguments() {
+    while [[ $# -gt 0 ]]; do
+        key="$1"
+        case $key in
+        -u | --user)
+            USER="$2"
+            shift
             ;;
-        h)
+        -d | --domain)
+            DOMAIN="$2"
+            shift
+            ;;
+        -h | help)
             usage
             exit 0
             ;;
-        :)
-            err "Option -$OPTARG requires an argument." 2
+        *)
+            echo "Wrong parameter: '$1'"
+            exit 3
             ;;
-        \?)
-            err "Invalid option: -$OPTARG" 1
-            usage
-            ;;
-    esac
-done
-shift $((OPTIND-1))
-
-
-
-remaining_arguments=( "$@" )
-if [[ ${#remaining_arguments[*]} -gt 0 ]]; then
-    err "Invalid arguments were given" 3
-fi
-
+        esac
+        shift
+    done
+    shift $((OPTIND - 1))
+    remaining_arguments=("$@")
+    if [[ ${#remaining_arguments[*]} -gt 0 ]]; then
+        err "Invalid arguments were given" 3
+    fi
+}
+parse_arguments "$@"
 
 mkdir -p $HOME/.ssh
-SSH_KEY_NAME="$(whoami)_ssh_$(date +%Y%m%d)@$DOMAIN"
+SSH_KEY_NAME="${USER}_ssh_$(date +%Y%m%d)@$DOMAIN"
+
 ssh-keygen -t rsa -b 4096 -C "${SSH_KEY_NAME}" -f "$HOME/.ssh/${SSH_KEY_NAME}.id_rsa"
 
 cat "$HOME/.ssh/${SSH_KEY_NAME}.id_rsa.pub" | pbcopy

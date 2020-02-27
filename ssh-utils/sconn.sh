@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 USER=$GFK_USER_NAME
 DEST_HOST=$DEV1
 SSH_KEY=$PRIVATE_KEY
@@ -13,7 +12,6 @@ USE_PRIVATE_KEY=0
 VERBOSE=0
 OFF_SET=0
 SOCKET="/tmp/$DEST_HOST-$SSH_PORT-$USER"
-
 
 usage() {
     echo "Usage:"
@@ -37,7 +35,7 @@ usage() {
 
 }
 
-usage_connect(){
+usage_connect() {
     echo
     echo "Establish a ssh connection."
     echo "Usage:"
@@ -56,7 +54,7 @@ usage_connect(){
     echo
 }
 
-usage_tunnel(){
+usage_tunnel() {
     echo
     echo "Manages ssh tunnels to a specified host"
     echo "Usage:"
@@ -71,7 +69,7 @@ usage_tunnel(){
     echo
 }
 
-function checkConnection(){
+function checkConnection() {
     if [ $# -ne 1 ]; then
         echo "Checks connection ssh connection in a specific port:"
         echo "Usage:"
@@ -84,42 +82,43 @@ function checkConnection(){
     fi
 
     port="$1"
-    nc -z localhost $port || echo 'no tunnel open' ; exit 0;
-    echo "tunnel active on port $1"; exit 0;    
+    nc -z localhost $port || echo 'no tunnel open'
+    exit 0
+    echo "tunnel active on port $1"
+    exit 0
     #https://apple.stackexchange.com/questions/117644/how-can-i-list-my-open-network-ports-with-netstat
 }
 
-function connect(){
-    while [[ $# -gt 0 ]]
-    do
+function connect() {
+    while [[ $# -gt 0 ]]; do
         key="$1"
         case $key in
-            -u|--user)
-                USER="$2"
-                shift
-                ;;
-            -h|--host)
-                DEST_HOST="$2"
-                shift
-                ;;
-            -p|--port)
-                SSH_PORT="$2"
-                shift
-                ;;
-            -v|--verbose)
-                VERBOSE=1
-                ;;
-            -k)
-              USE_PRIVATE_KEY=1
-              ;;
-            -H|help)
-              usage_connect
-              exit 0
-              ;;
-            *)
-              echo "Wrong parameter: '$1'"
-              exit 3
-              ;;
+        -u | --user)
+            USER="$2"
+            shift
+            ;;
+        -h | --host)
+            DEST_HOST="$2"
+            shift
+            ;;
+        -p | --port)
+            SSH_PORT="$2"
+            shift
+            ;;
+        -v | --verbose)
+            VERBOSE=1
+            ;;
+        -k)
+            USE_PRIVATE_KEY=1
+            ;;
+        -H | help)
+            usage_connect
+            exit 0
+            ;;
+        *)
+            echo "Wrong parameter: '$1'"
+            exit 3
+            ;;
         esac
         shift
     done
@@ -137,58 +136,57 @@ function connect(){
     ssh $LOGIN_MODE $USER"@"$DEST_HOST -p $SSH_PORT
 }
 
-function createTunnel(){
-    while [[ $# -gt 0 ]]
-    do
+function createTunnel() {
+    while [[ $# -gt 0 ]]; do
         key="$1"
         case $key in
-            -u|--user)
-                USER="$2"
-                shift
-                ;;
-            -h|--host)
-                DEST_HOST="$2"
-                shift
-                ;;
-            -p|--port)
-                SSH_PORT="$2"
-                shift
-                ;;
-            -bl|--bind-local)
-                BIND_LOCAL_PORT="$2"
-                shift
-                ;;
-            -bt|--bind-target)
-                BIND_TARGET_PORT="$2"
-                shift
-                ;;
-            -v|--verbose)
-                VERBOSE=1
-                ;;
-            -k)
-              USE_PRIVATE_KEY=1
-              ;;
-            -H|help)
-              echo
-              echo "Creates ssh tunnels"
-              echo "Usage:"
-              echo "    sconn tunnel create [-u user] [-h host] [-v] [-k] [-H | help]"
-              echo "      -u | --user user name (default: \$GFK_USER_NAME)"
-              echo "      -h | --host ip address to the target host (default: \$DEV1)"
-              echo "      -p | --port ssh port number (default: 22)"
-              echo "      -bl | --bind-local bind origin port (default: 9000)"
-              echo "      -bt | --bind-target bind destination port (default: 9000)"
-              echo "      -s | --socket control socket for connection sharing (default: '%h%p%r')"
-              echo "      -k set connect with ssh private key instead of password."
-              echo "           Depends on \$PRIVATE_KEY environment var which should point to the key file"
-              echo "      -v   set verbose mode to true"
-              echo
-              exit 0
-              ;;
-            *)
-              echo "Wrong parameter: '$1'"
-              exit 3
-              ;;
+        -u | --user)
+            USER="$2"
+            shift
+            ;;
+        -h | --host)
+            DEST_HOST="$2"
+            shift
+            ;;
+        -p | --port)
+            SSH_PORT="$2"
+            shift
+            ;;
+        -bl | --bind-local)
+            BIND_LOCAL_PORT="$2"
+            shift
+            ;;
+        -bt | --bind-target)
+            BIND_TARGET_PORT="$2"
+            shift
+            ;;
+        -v | --verbose)
+            VERBOSE=1
+            ;;
+        -k)
+            USE_PRIVATE_KEY=1
+            ;;
+        -H | help)
+            echo
+            echo "Creates ssh tunnels"
+            echo "Usage:"
+            echo "    sconn tunnel create [-u user] [-h host] [-v] [-k] [-H | help]"
+            echo "      -u | --user user name (default: \$GFK_USER_NAME)"
+            echo "      -h | --host ip address to the target host (default: \$DEV1)"
+            echo "      -p | --port ssh port number (default: 22)"
+            echo "      -bl | --bind-local bind origin port (default: 9000)"
+            echo "      -bt | --bind-target bind destination port (default: 9000)"
+            echo "      -s | --socket control socket for connection sharing (default: '%h%p%r')"
+            echo "      -k set connect with ssh private key instead of password."
+            echo "           Depends on \$PRIVATE_KEY environment var which should point to the key file"
+            echo "      -v   set verbose mode to true"
+            echo
+            exit 0
+            ;;
+        *)
+            echo "Wrong parameter: '$1'"
+            exit 3
+            ;;
         esac
         shift
     done
@@ -211,19 +209,18 @@ function createTunnel(){
     ssh $LOGIN_MODE -f -N -M -S "$SOCKET" -L "${BIND_LOCAL_PORT}:${BIND_TARGET_HOST}:${BIND_TARGET_PORT}" $USER"@"$DEST_HOST -p $SSH_PORT
 }
 
-function listTunnels(){
+function listTunnels() {
     lsof -PiTCP -sTCP:LISTEN | grep ssh
 }
 
-function closeConnection(){
+function closeConnection() {
     if [[ ! -z "$1" ]]; then
         SOCKET="$1"
     fi
     ssh -S $SOCKET -O exit "localhost"
 }
 
-
-function tunnel(){
+function tunnel() {
 
     if [ $# -lt 1 ]; then
         usage_tunnel
@@ -232,35 +229,35 @@ function tunnel(){
 
     subtask=$1
     case $subtask in
-        create)
-            createTunnel "${@:2}"
-            exit 0
-            ;;
-        halt)
-            closeConnection "${@:2}"
-            echo "Tunnels still open:"
-            listTunnels
-            echo
-            echo "<< End of list."
-            exit 0
-            ;;
-        list)
-            echo "Checking for existing ssh tunnels >>"
-            listTunnels
-            echo
-            echo "<< End of list."
-            echo
-            exit 0
-            ;;
-        -H|help)
-            usage_tunnel
-            exit 0
-            ;;
-        *)
-            echo "Wrong option"
-            usage_tunnel
-            exit 1
-            ;;
+    create)
+        createTunnel "${@:2}"
+        exit 0
+        ;;
+    halt)
+        closeConnection "${@:2}"
+        echo "Tunnels still open:"
+        listTunnels
+        echo
+        echo "<< End of list."
+        exit 0
+        ;;
+    list)
+        echo "Checking for existing ssh tunnels >>"
+        listTunnels
+        echo
+        echo "<< End of list."
+        echo
+        exit 0
+        ;;
+    -H | help)
+        usage_tunnel
+        exit 0
+        ;;
+    *)
+        echo "Wrong option"
+        usage_tunnel
+        exit 1
+        ;;
     esac
 }
 
@@ -273,32 +270,26 @@ main() {
     subtask=$1
 
     case $subtask in
-        connect)
-            connect "${@:2}"
-            ;;
-        spyport)
-            checkConnection "${@:2}"
-            ;;
-        tunnel)
-            tunnel "${@:2}"
-            ;;
-        help)
-            echo "Creates a ssh tunnel to a specified host"
-            usage
-            exit 0
-            ;;
-        *)
-            echo "Wrong option"
-            usage
-            exit 1
-            ;;
+    connect)
+        connect "${@:2}"
+        ;;
+    spyport)
+        checkConnection "${@:2}"
+        ;;
+    tunnel)
+        tunnel "${@:2}"
+        ;;
+    help)
+        echo "Creates a ssh tunnel to a specified host"
+        usage
+        exit 0
+        ;;
+    *)
+        echo "Wrong option"
+        usage
+        exit 1
+        ;;
     esac
 }
 
-
 main "$@"
-
-
-
-
-
