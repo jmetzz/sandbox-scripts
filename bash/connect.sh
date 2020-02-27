@@ -13,7 +13,7 @@ usage() {
 	echo "Establish connection options are:"
 	echo "    -u | --user user name (default: webuser)"
 	echo "    -h | --host ip address to the target host (default: \$DEFAULT_DOCKER_HOST)"
-	echo "    -n | --off-set integer sets host address accoding to ravago convention (docker number); Can not be used with -h"
+	echo "    -n | --off-set integer sets host address accoding to convention (docker number); Can not be used with -h"
     echo "    -v   set verbose mode to true"
     echo
 	echo "  Examples:"
