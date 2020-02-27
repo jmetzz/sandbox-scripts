@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BLUE=$'\033[0;34m'
 MAGENTA=$'\033[0;35m'

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 error () {
 	echo "Wrong pagameter: $1"

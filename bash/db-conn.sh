@@ -1,18 +1,5 @@
-#!/bin/bash 
+#!/usr/bin/env bash
 
-#set ohm-db-to-docker-endpoint
-#windlfly-9.0.1.Final/standalone/configuration/standalone.xml
-#base it on:
-#							jndi-name					connection 			IP 	 			Port 
-#
-#	ohm: 				"java:/jdbc/resinexDev" 		ohmdock 			docker ip 		50000+offset
-#	sales: 				"java:/jdbc/salesDB"			ravdock 			docker ip 		50000+offset
-#defaults
-#	offset: 0
-#	host: 10.3.11.62 
-#	gaussDev: 			"java:/jdbc/gaussDev"			GAUSSND3 			172.21.0.157	5480
-#	ohmsven: 			"java:/jdbc/ohmsven"			ohmsven 			10.3.11.30		50003
-#	prdCpy: 			"java:/jdbc/resinexPrdCpy"		prdcpy  			10.3.11.30		50003
 BLUE=$'\033[1;34m'
 RED=$'\033[1;31m'
 GREEN=$'\033[1;32m'

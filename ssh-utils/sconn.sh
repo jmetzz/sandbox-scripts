@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 error () {
      echo "Wrong parameter: $1"
@@ -8,10 +8,10 @@ error () {
 
 usage() {
     echo "Usage:"
-    echo "   tunnel connect [-n number] [-h host] [-u user] [-p password] [-a app] [-v]"
-    echo "   tunnel list"
-    echo "   tunnel spyport <port>"
-    echo "   tunnel halt <control socket path>"
+    echo "   sconn connect [-n number] [-h host] [-u user] [-p password] [-a app] [-v]"
+    echo "   sconn list"
+    echo "   sconn spyport <port>"
+    echo "   sconn halt <control socket path>"
     echo
     echo "Establish connection options are:"
     echo "    -u | --user user name (default: \$GFK_USER_NAME)"
@@ -27,25 +27,27 @@ usage() {
     echo "    -v   set verbose mode to true"
     echo
     echo "    Examples:"
-    echo "      tunnel connect -h 10.3.11.15 -p 2223"
-    echo "      tunnel connect -n 2"
+    echo "      sconn connect -h 10.3.11.15 -p 2223"
+    echo "      sconn connect -n 2"
     echo
     echo "List open tunnels:"
-    echo "    tunnel list"
+    echo "    sconn tunnel list"
     echo
     echo "Check connection:"
-    echo "    tunnel spyport 22"
+    echo "    sconn spyport 22"
     echo
-    echo "Close connection options are:"
+    echo "Close tunnel connection options are:"
     echo "    -s | --socket  control socket for connection sharing (default: 'host-sshport-user')"
     echo
     echo "    Example:"
-    echo "      tunnel halt /tmp/10.3.11.62-2223-username"
+    echo "      sconn tunnel halt /tmp/10.3.11.62-2223-username"
 
 }
 
 USER=$GFK_USER_NAME
 DEST_HOST=$DEV1
+SSH_KEY=$PRIVATE_KEY
+
 SSH_PORT=22
 BIND_LOCAL_PORT="9000"
 BIND_TARGET_PORT="9000"
@@ -54,7 +56,6 @@ USE_PRIVATE_KEY=0
 VERBOSE=0
 OFF_SET=0
 SOCKET="/tmp/$DEST_HOST-$SSH_PORT-$USER"
-
 
 function checkConnection(){
     if [ $# -ne 1 ]; then
@@ -132,7 +133,7 @@ function parseArgs(){
 function connect(){
     parseArgs "${@}"
     if [[ $USE_PRIVATE_KEY == 1 ]]; then
-        LOGIN_MODE="-i ${PRIVATE_KEY}"
+        LOGIN_MODE="-i ${SSH_KEY}"
     else
         LOGIN_MODE=""
     fi
@@ -147,9 +148,11 @@ function createTunnel(){
         set -x
     fi
 
-    #ssh -i $PRIVATE_KEY -f -N -M -S "$SOCKET" -L "${BIND_LOCAL_PORT}:${BIND_TARGET_HOST}:${BIND_TARGET_PORT}" $USER"@"$DEST_HOST -p $SSH_PORT
+    #ssh -i $SSH_KEY -f -N -M -S "$SOCKET" -L "${BIND_LOCAL_PORT}:${BIND_TARGET_HOST}:${BIND_TARGET_PORT}" $USER"@"$DEST_HOST -p $SSH_PORT
     if [[ $USE_PRIVATE_KEY == 1 ]]; then
-        LOGIN_MODE="-i ${PRIVATE_KEY}"
+        echo "Using ssh private key '${SSH_KEY}'"
+        echo "If your private ssh key file name is 'id_rsa' you don't need to use this option"
+        LOGIN_MODE="-i ${SSH_KEY}"
     else
         LOGIN_MODE=""
     fi
@@ -169,14 +172,14 @@ main() {
     subtask=$1
 
     case $subtask in
+        connect)
+            connect "${@:2}"
+            ;;
         spyport)
             checkConnection "${@:2}"
             ;;
         tunnel)
             createTunnel "${@:2}"
-            ;;
-        connect)
-            connect "${@:2}"
             ;;
         halt)
             closeConnection "${@:2}"

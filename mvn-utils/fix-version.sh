@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 usage() {
 	echo "Fix maven version based on the currenc branch name. Always add SNAPSHOT at the end."
