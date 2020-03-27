@@ -14,7 +14,13 @@ usage() {
 	echo "Behaviour:"
 	echo "    List the commits present in branch-2 that are not in branch-1."
 	echo
+}
 
+function err (){
+    local msg=$1
+    echo "[ERROR] - ${msg}"
+    usage
+    exit $2
 }
 
 
@@ -26,38 +32,47 @@ function checkBranchesExist(){
 	[[ -z ${to} ]]  && echo "Remote '${2}' branch does not exits" && exit 1;
 }
 
-inverse=0
+INVERSE=0
 
-while [[ $# -gt 2 ]]
-do
-	key="$1"
+if [ $# -lt 2 ]; then
+    usage
+    exit 1
+fi
 
-	case $key in
-		-i|--inverse)
-			inverse=1
-			;;
-		-h|--help)
-			usage
-			exit 0
-			;;
-		*)
-			echo "Wrong option"
-			usage
-			exit 1
-			;;
-	esac
-	shift
+while getopts ":hi" opt; do
+    case "${opt}" in
+        h)
+            usage
+            exit 0
+            ;;
+        i)
+            INVERSE=1
+            ;;
+        :)
+            err "Option -$OPTARG requires an argument." 2
+            ;;
+        \?)
+            err "Invalid option: -$OPTARG" 1
+            usage
+            ;;
+    esac
 done
+shift $((OPTIND-1))
 
+
+remaining_arguments=( "$@" )
+if [[ ${#remaining_arguments[*]} -ne 2 ]]; then
+    err "Missing arguments" 3
+fi
 
 #BRANCH_1=`git rev-parse --abbrev-ref HEAD`
-BRANCH_1="$1"
-BRANCH_2="$2"
+BRANCH_1="${remaining_arguments[0]}"
+BRANCH_2="${remaining_arguments[1]}"
 
 
 checkBranchesExist ${BRANCH_1} ${BRANCH_2}
 
-if [[ $inverse -eq 1 ]]; then
+if [[ $INVERSE -eq 1 ]]; then
     git rev-list --pretty ${BRANCH_2}..${BRANCH_1}
 else
     git rev-list --pretty ${BRANCH_1}..${BRANCH_2}

@@ -19,14 +19,14 @@ function usage {
     echo "       -p           : also prune when fetching. Only applies if '-u' is also selected, ignored otherwise."
     echo
     echo "Examples:"
-    echo "   # Update master branch on lmo components "
-    echo "   $rgit.sh -uvc master lmo /Users/jean/kbc/LMO"
+    echo "   # Update master branch on PROJECT-1 components "
+    echo "   $rgit.sh -uvc master PROJECT-1 /Users/jean/workspace/PROJECT-1"
     echo
-    echo "   # Update develop branch for lmo components"
-    echo "   $rgit.sh -u lmo /Users/jean/kbc/LMO"
+    echo "   # Update develop branch for PROJECT-1 components"
+    echo "   $rgit.sh -u PROJECT-1 /Users/jean/workspace/PROJECT-1"
     echo 
-    echo "   # Update develop branch for lmo components and prune branches"
-    echo "   $rgit.sh -up lmo /Users/jean/kbc/LMO"
+    echo "   # Update develop branch for PROJECT-1 components and prune branches"
+    echo "   $rgit.sh -up PROJECT-1 /Users/jean/workspace/PROJECT-1"
 }
 
 function err (){
