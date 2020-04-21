@@ -51,6 +51,7 @@ usage_connect() {
     echo "    Examples:"
     echo "      sconn connect -h \$DEV_SERVER -p 2223"
     echo "      sconn connect -k"
+    echo "      sconn.sh connect -u jean.metz -h ce1 -k"
     echo
 }
 
@@ -63,6 +64,7 @@ usage_tunnel() {
     echo "  Sub-tasks are: create, list, halt, and [-H|help]"
     echo
     echo "  Examples:"
+    echo "      sconn tunnel create -u jean.metz -h ce1 -k"
     echo "      sconn tunnel create -k"
     echo "      sconn tunnel list"
     echo "      sconn tunnel halt <control socket path>"
