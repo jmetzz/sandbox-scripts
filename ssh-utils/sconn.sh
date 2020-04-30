@@ -19,7 +19,7 @@ usage() {
     echo
     echo "    Examples:"
     echo "        sconn connect [-u user] [-h host] [-p port number] [-k] [-v] [-H|help]"
-    echo "        sconn spyport <port>"
+    echo "        sconn spyport <ssh port>"
     echo "        sconn tunnel [create | list | halt] <options>"
     echo "        sconn halt <control socket path>"
     echo "        sconn help"
@@ -200,15 +200,24 @@ function createTunnel() {
 
     #ssh -i $SSH_KEY -f -N -M -S "$SOCKET" -L "${BIND_LOCAL_PORT}:${BIND_TARGET_HOST}:${BIND_TARGET_PORT}" $USER"@"$DEST_HOST -p $SSH_PORT
     if [[ $USE_PRIVATE_KEY == 1 ]]; then
-        echo "Using ssh private key '${SSH_KEY}'"
-        echo "If your private ssh key file name is 'id_rsa' you don't need to use this option"
         LOGIN_MODE="-i ${SSH_KEY}"
     else
         LOGIN_MODE=""
     fi
 
+    CURRENTDATE=`date +"%Y-%m-%d_%T"`
+    SOCKET="${SOCKET}_${CURRENTDATE}"
+
     echo "Creating tunnel with socket control: ${SOCKET}"
-    ssh $LOGIN_MODE -f -N -M -S "$SOCKET" -L "${BIND_LOCAL_PORT}:${BIND_TARGET_HOST}:${BIND_TARGET_PORT}" $USER"@"$DEST_HOST -p $SSH_PORT
+    echo "    Connection: $USER"@"$DEST_HOST -p $SSH_PORT"
+    echo "    Port forward: -L ${BIND_LOCAL_PORT}:${BIND_TARGET_HOST}:${BIND_TARGET_PORT}"
+    if [[ $USE_PRIVATE_KEY == 1 ]]; then
+        echo "    Login mode: using private ssh key"
+        echo "        file: '${SSH_KEY}'"
+        echo "        If your private ssh key file name is 'id_rsa' you don't need to use this option."
+    fi
+    echo "    Control socket: $SOCKET"
+    ssh $LOGIN_MODE -f -N -M -S "${SOCKET}" -L "${BIND_LOCAL_PORT}:${BIND_TARGET_HOST}:${BIND_TARGET_PORT}" $USER"@"$DEST_HOST -p $SSH_PORT
 }
 
 function listTunnels() {
